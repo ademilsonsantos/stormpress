@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:5.6
+    container_name: mysql
+    restart: always
+    ports:
+      - 33006:3306
+    environment:
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+      - MYSQL_ROOT_PASSWORD=wordpress
+    volumes:
+      - ./server/logs/mysql:/var/log/mysql
+      - ./server/data/mysql:/var/lib/mysql
+      - ./server/config/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+  flyway:
+    container_name: flyway
+    image: boxfuse/flyway:5.2.4
+    command: -url=jdbc:mysql://mysql/wordpress -schemas=wordpress -user=wordpress -password=wordpress -connectRetries=60 migrate
+    volumes:
+      - ./server/migrations:/flyway/sql
+    links:
+      - mysql
+    depends_on:
+      - mysql
+  webserver:
+    build:
+      context: ./server/bin/webserver-php7
+    container_name: webserverphp7
+    restart: always
+    ports:
+      - 8080:80
+      - 443:443
+    volumes:
+      - .:/var/www/html
+      - ./server/config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./server/config/vhosts:/etc/apache2/sites-enabled
+      - ./server/logs/apache2:/var/log/apache2
+    links:
+      - mysql
+    depends_on:
+      - flyway

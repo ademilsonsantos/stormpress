@@ -1,0 +1,33 @@
+
+name: Deploy App
+# trigger: push na branch master
+on:
+  push:
+    branches:
+    - master
+jobs:
+  build:
+    name: Connect
+    runs-on: ubuntu-latest
+    steps:
+    - name: Sign in to remote server and run commands
+      uses: appleboy/ssh-action@master
+      with:
+        # variaveis de ambiente do github secrets
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+            # entrar na pasta do projeto
+            cd /home/app
+
+            # baixar atualizacoes de codigo
+            git checkout -- .
+            git pull origin master
+
+            # substituir variaveis locais por variaveis de producao
+            sed -i 's/8080:80/80:80/' docker-compose.yml
+
+            # subir os containers
+            docker-compose up -d
