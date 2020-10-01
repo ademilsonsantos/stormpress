@@ -12,14 +12,25 @@ The main goal of **stormpress** is to set patterns to be easily implemented on w
   Icon by <a href="https://dribbble.com/creativeflip" target="_blank">Filipe Carvalho</a>
 </p>
 
+## :rocket: Startup
+
 ### Docker up (start database, run migrations and start server)
 
-```
+```sh
 docker-compose up -d
 ```
 
 ### Logs
 
-```
+```sh
 docker-compose logs -f
+```
+
+<div id='license'/>
+
+## :scroll: License 
+
+```
+MIT license. Copyright (c) 2020 Grupo Unika.
+For more information, see the LICENSE file.
 ```
